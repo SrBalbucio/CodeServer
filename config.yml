@@ -1,0 +1,30 @@
+## CONFIGURATION OF CODESERVER
+
+# Disconnection Time of Client
+disconnectionTime: 60
+
+security:
+  secret: "SECRET-KEY"
+
+projects:
+  login: # ID of Project
+    name: "Login" # Name of Project
+    path: "projects/login" # Path of Project
+    language: "java"
+  website:
+    name: "Website"
+    path: "projects/website"
+    language: "java"
+
+users:
+  "1":
+    user: "root"
+    password: "admin123"
+  "2":
+    user: "root2"
+    password: "admin123"
+
+languages:
+  java:
+    name: "Java"
+    icon: "icons/java.png"

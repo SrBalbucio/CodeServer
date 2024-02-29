@@ -1,0 +1,41 @@
+## CONFIGURATION OF CODESERVER
+
+# Disconnection Time of Client
+disconnectionTime: 60
+
+security:
+  secret: "SECRET-KEY"
+
+#Load Projects
+projects:
+  login: # ID of Project
+    name: "Login" # Name of Project
+    path: "projects/login" # Path of Project
+    language: "java" # Language of Project
+  website:
+    name: "Website"
+    path: "projects/website"
+    language: "java"
+
+users:
+  "1":
+    user: "root"
+    password: "admin123"
+  "2":
+    user: "root2"
+    password: "admin123"
+
+# Configure the programming languages you want to use
+languages:
+  java: # ID of Language
+    name: "Java" # Name of Language
+    icon: "icons/java.png" # Icon of Language
+    src: "src/main/java" # SRC Path
+    resource: "src/main/resource" # Resource Path
+    fileExtension: ".java" # File Extesion of Language
+  rust:
+    name: "Rust"
+    icon: "icons/rust.png"
+    src: "src"
+    resource: "/"
+    fileExtension: ".rs"
