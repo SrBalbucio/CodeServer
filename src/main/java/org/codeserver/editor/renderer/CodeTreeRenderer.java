@@ -33,18 +33,18 @@ public class CodeTreeRenderer extends DefaultTreeCellRenderer {
 
         String path = pathBuilder.toString();
 
-        if (path.contains(project.getLanguage().getSrcPath())) {
-            if (str.split("\\.").length > 1) {
-                setIcon(Icons.SOURCE_FOLDER_WHITE);
-            }
-        }
-
         if(path.contains("\\.")){
             setIcon(Icons.FILE);
         } else if(expanded){
             setIcon(Icons.OPEN_FOLDER);
         } else {
             setIcon(Icons.FOLDER);
+        }
+
+        if (path.contains(project.getLanguage().getSrcPath())) {
+            if (str.split("\\.").length > 1) {
+                setIcon(Icons.SOURCE_FOLDER_WHITE);
+            }
         }
 
         CodeClient.languages.forEach(l -> {

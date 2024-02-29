@@ -51,14 +51,7 @@ public class Icons {
     }
 
     public static BufferedImage resizeImage(String classpath, int targetWidth, int targetHeight) throws IOException {
-        Image resultingImage = ImageIO.read(Objects.requireNonNull(Icons.class.getResourceAsStream(classpath)))
-                .getScaledInstance(targetWidth, targetHeight, Image.SCALE_DEFAULT);
-        BufferedImage outputImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = outputImage.createGraphics();
-        g2.setBackground(new Color(0,0,0,0));
-        g2.setColor(new Color(0,0,0,0));
-        g2.drawImage(resultingImage, 0, 0, null);
-        return outputImage;
+        return resizeImage(ImageIO.read(Objects.requireNonNull(Icons.class.getResourceAsStream(classpath))), targetWidth, targetHeight);
     }
 
     public static BufferedImage resizeImage(Image image, int targetWidth, int targetHeight) throws IOException {
@@ -66,6 +59,8 @@ public class Icons {
                 .getScaledInstance(targetWidth, targetHeight, Image.SCALE_DEFAULT);
         BufferedImage outputImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = outputImage.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setBackground(new Color(0,0,0,0));
         g2.setColor(new Color(0,0,0,0));
         g2.drawImage(resultingImage, 0, 0, null);
