@@ -5,12 +5,15 @@ import lombok.Getter;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Document {
+
+    private static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     @Getter
     private String path;
@@ -28,16 +31,26 @@ public class Document {
             builder.append(line).append("\n");
             lines++;
         }
+        executor.scheduleAtFixedRate(() -> {
+            try {
+                FileOutputStream outputStream = new FileOutputStream(file);
+                outputStream.write(builder.toString().getBytes(StandardCharsets.UTF_8));
+                outputStream.flush();
+                outputStream.close();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }, 20, 5, TimeUnit.SECONDS);
     }
 
     
-    public void remove(int offs, int len) throws BadLocationException {
-
+    public void remove(int offs, int len) {
+        builder.delete(offs, offs+len);
     }
 
     
-    public void insertString(int offset, String str) throws BadLocationException {
-
+    public void insertString(int offset, String str) {
+        builder.insert(offset, str);
     }
 
     
@@ -48,6 +61,10 @@ public class Document {
     
     public void getText(int offset, int length, Segment txt) throws BadLocationException {
 
+    }
+
+    public void replace(int offset, int length, String str){
+        builder.replace(offset, offset+length, str);
     }
 
     public String getText(){

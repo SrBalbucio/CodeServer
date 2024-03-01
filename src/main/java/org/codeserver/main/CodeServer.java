@@ -179,6 +179,9 @@ public class CodeServer implements IDelegate {
             if(file == null){
                 return new JSONObject().put("error", true).put("message", "This file does not exist or the server cannot open it now!");
             }
+            if(file.isDirectory()){
+                return new JSONObject().put("error", true).put("silent", true).put("message", "Is this shit a directory?????");
+            }
             Document document = openedDocuments.stream().filter(d -> d.getPath().equalsIgnoreCase(path)).findFirst().orElse(null);
             if(document == null){
                 try {
@@ -195,6 +198,37 @@ public class CodeServer implements IDelegate {
             documentByUser.put(data.getKey(), documents);
 
             return new JSONObject().put("document", document.getText());
+        } else if(key.equalsIgnoreCase("insert_document")){
+            String path = data.getValue().getString("path");
+            int offset = data.getValue().getInt("offset");
+            String text = data.getValue().getString("text");
+            Document document = documentByUser.get(data.getKey()).stream().filter(d -> d.getPath().equalsIgnoreCase(path)).findFirst().orElse(null);
+            if(document != null){
+                document.insertString(offset, text);
+                return true;
+            }
+            return false;
+        } else if(key.equalsIgnoreCase("remove_document")){
+            String path = data.getValue().getString("path");
+            int offset = data.getValue().getInt("offset");
+            int length = data.getValue().getInt("length");
+            Document document = documentByUser.get(data.getKey()).stream().filter(d -> d.getPath().equalsIgnoreCase(path)).findFirst().orElse(null);
+            if(document != null){
+                document.remove(offset, length);
+                return true;
+            }
+            return false;
+        } else if(key.equalsIgnoreCase("change_document")){
+            String path = data.getValue().getString("path");
+            int offset = data.getValue().getInt("offset");
+            int length = data.getValue().getInt("length");
+            String text = data.getValue().getString("text");
+            Document document = documentByUser.get(data.getKey()).stream().filter(d -> d.getPath().equalsIgnoreCase(path)).findFirst().orElse(null);
+            if(document != null){
+                document.replace(offset,length, text);
+                return true;
+            }
+            return false;
         }
 
         return null;
