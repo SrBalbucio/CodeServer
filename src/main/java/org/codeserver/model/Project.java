@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +58,35 @@ public class Project {
             }
         }
         return listFiles;
+    }
+
+    public String loadDocument(String filePath) {
+        try {
+            File file = new File(rootPath, filePath);
+            if (!file.exists()) {
+                return null;
+            }
+            StringBuilder builder = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            int lines = 0;
+            String line = null;
+            while ((line = reader.readLine()) != null && lines < 5000) {
+                builder.append(line).append("\n");
+                lines++;
+            }
+            return builder.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public File getFile(String filePath) {
+        File file = new File(rootPath, filePath);
+        if (!file.exists()) {
+            return null;
+        }
+        return file;
     }
 
     public JSONObject toJSON() {

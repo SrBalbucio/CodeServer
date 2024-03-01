@@ -3,6 +3,7 @@ package org.codeserver.editor;
 import lombok.Getter;
 import org.codeserver.editor.components.ExplorerPanel;
 import org.codeserver.editor.components.MenuBar;
+import org.codeserver.editor.components.TabbedPanel;
 import org.codeserver.main.CodeClient;
 import org.codeserver.model.EditableProject;
 import org.json.JSONObject;
@@ -32,11 +33,13 @@ public class EditorView extends JFrame {
         this.setVisible(true);
     }
 
+    @Getter
     private ExplorerPanel explorer;
+    @Getter
+    private TabbedPanel tabbedPanel;
 
     public JSplitPane getCenter(){
-        JSplitPane panel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (explorer = new ExplorerPanel(this, project)), new JTabbedPane());
+        JSplitPane panel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (explorer = new ExplorerPanel(this, project)), (tabbedPanel = new TabbedPanel(this)));
         return panel;
     }
-
 }

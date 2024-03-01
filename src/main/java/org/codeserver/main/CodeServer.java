@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.codeserver.logger.LoggerFormat;
+import org.codeserver.model.Document;
 import org.codeserver.model.Language;
 import org.codeserver.model.Project;
 import org.codeserver.model.User;
@@ -16,11 +17,9 @@ import org.codeserver.utils.Payload;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.ConsoleHandler;
@@ -39,7 +38,11 @@ public class CodeServer implements IDelegate {
     private CopyOnWriteArrayList<Project> projects = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<Language> languages = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<User> users = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<Document> openedDocuments = new CopyOnWriteArrayList<>();
     private ConcurrentHashMap<String, Long> tokens = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<User, List<Document>> documentByUser = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<User, List<Project>> projectByUser = new ConcurrentHashMap<>();
+
 
     public CodeServer(int port) throws Exception{
         configureLogger();
@@ -136,6 +139,9 @@ public class CodeServer implements IDelegate {
     public JSONObject selectProject(User user, String project){
         JSONObject json = new JSONObject();
         Project p = getProjectByName(project);
+        List<Project> pjs = projectByUser.getOrDefault(user, new CopyOnWriteArrayList<>());
+        pjs.add(p);
+        projectByUser.put(user, pjs);
         json.put("paths", p.listarArquivos());
         json.put("id", p.getId());
         json.put("name", p.getName());
@@ -164,6 +170,31 @@ public class CodeServer implements IDelegate {
             return selectProject(data.getKey(), data.getValue().getString("project"));
         } else if(key.equalsIgnoreCase("list_languages")){
             return listLanguages();
+        } else if(key.equalsIgnoreCase("download_file")){
+
+        } else if(key.equalsIgnoreCase("get_document_file")){
+            Project project = getProjectByName(data.getValue().getString("projectName"));
+            String path = data.getValue().getString("path");
+            File file = project.getFile(path);
+            if(file == null){
+                return new JSONObject().put("error", true).put("message", "This file does not exist or the server cannot open it now!");
+            }
+            Document document = openedDocuments.stream().filter(d -> d.getPath().equalsIgnoreCase(path)).findFirst().orElse(null);
+            if(document == null){
+                try {
+                    document = new Document(path, file);
+                    openedDocuments.add(document);
+                } catch (Exception e){
+                    e.printStackTrace();
+                    return new JSONObject().put("error", true).put("message", "This file does not exist or the server cannot open it now!");
+                }
+            }
+
+            List<Document> documents = documentByUser.getOrDefault(data.getKey(), new CopyOnWriteArrayList<>());
+            documents.add(document);
+            documentByUser.put(data.getKey(), documents);
+
+            return new JSONObject().put("document", document.getText());
         }
 
         return null;

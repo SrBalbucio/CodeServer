@@ -147,7 +147,7 @@ public class ExplorerPanel extends JScrollPane implements TreeSelectionListener,
             if(e.getClickCount() == 1) {
             }
             else if(e.getClickCount() == 2) {
-                // open new tab
+                view.getTabbedPanel().createNewFileTab(selPath);
             }
         }
     }

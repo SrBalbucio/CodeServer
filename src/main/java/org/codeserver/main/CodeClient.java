@@ -25,10 +25,12 @@ import java.util.stream.Collectors;
 
 public class CodeClient {
 
+    @Getter
     private UiBooster ui;
     private boolean logged;
     private String token;
     private User user;
+    @Getter
     private Client client;
     private EditableProject editableProject;
     private EditorView editorView;
@@ -100,5 +102,9 @@ public class CodeClient {
 
     private Language getLanguage(String id) {
         return languages.stream().filter(l -> l.getId().equalsIgnoreCase(id)).findFirst().orElse(null);
+    }
+
+    public Object request(String method, Object object){
+        return client.request(method, new JSONObject().put("token", token).put("data", object));
     }
 }
