@@ -25,6 +25,9 @@ public class Icons {
     public static ImageIcon FILE;
     public static ImageIcon FOLDER;
     public static ImageIcon OPEN_FOLDER;
+    public static ImageIcon CARGO_RUST;
+    public static ImageIcon IMAGE;
+    public static ImageIcon CMD;
 
     static {
         try {
@@ -38,13 +41,16 @@ public class Icons {
             JSON = new ImageIcon(resizeImage("/icons/json.png", 16, 16));
             TXT = new ImageIcon(resizeImage("/icons/txt.png", 16, 16));
             XML = new ImageIcon(resizeImage("/icons/xml.png", 16, 16));
-            JAVA_COLORIDO = new ImageIcon(resizeImage("/icons/java-colorido.png", 16, 16));
-            RUST_COLORIDO = new ImageIcon(resizeImage("/icons/rust-colorido.png", 16, 16));
+            JAVA_COLORIDO = new ImageIcon(resizeImage("/icons/java-colorido.png", 18, 18));
+            RUST_COLORIDO = new ImageIcon(resizeImage("/icons/rust-colorido.png", 18, 18));
             ECLIPSE = new ImageIcon(resizeImage("/icons/eclipse.png", 16, 16));
             FILE = new ImageIcon(resizeImage("/icons/file.png", 16, 16));
             FILE = new ImageIcon(resizeImage("/icons/file.png", 16, 16));
             FOLDER = new ImageIcon(resizeImage("/icons/folder.png", 16, 16));
             OPEN_FOLDER = new ImageIcon(resizeImage("/icons/open-folder.png", 16, 16));
+            CARGO_RUST = new ImageIcon(resizeImage("/icons/cargo-rust.png", 16, 16));
+            IMAGE = new ImageIcon(resizeImage("/icons/image-2.png", 16, 16));
+            CMD = new ImageIcon(resizeImage("/icons/cmd.png", 16, 16));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

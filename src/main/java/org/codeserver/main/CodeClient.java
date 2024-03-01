@@ -2,8 +2,10 @@ package org.codeserver.main;
 
 import co.gongzh.procbridge.client.Client;
 import de.milchreis.uibooster.UiBooster;
+import de.milchreis.uibooster.components.ProgressDialog;
 import de.milchreis.uibooster.model.ListElement;
 import de.milchreis.uibooster.model.LoginCredentials;
+import lombok.Getter;
 import org.codeserver.editor.EditorView;
 import org.codeserver.model.EditableProject;
 import org.codeserver.model.Language;
@@ -12,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,6 +33,8 @@ public class CodeClient {
     private EditableProject editableProject;
     private EditorView editorView;
     public static CopyOnWriteArrayList<Language> languages = new CopyOnWriteArrayList<>();
+    @Getter
+    private ProgressDialog progress;
 
     public CodeClient() {
         this.ui = new UiBooster();
@@ -57,7 +62,7 @@ public class CodeClient {
         }
     }
 
-    public void loadProjects() {
+    public boolean loadProjects() {
         JSONArray langs = (JSONArray) client.request("list_languages", new JSONObject().put("token", token).put("data", new JSONObject()));
         langs.forEach(o -> languages.add(CodeServer.GSON.fromJson(((String) o), Language.class)));
 
@@ -72,13 +77,25 @@ public class CodeClient {
         }
         ListElement e = ui.showList("These are the projects that are available to you on the server you connected to:", "Select Project", (ex) -> {
         }, options);
+        if(e == null){
+            return false;
+        }
+        progress = ui.showProgressDialog("We are loading your project, this may take a few moments...", "Loading project", 0, 100);
+        progress.setProgress(10);
         JSONObject project = (JSONObject) client.request("select_project", new JSONObject().put("token", token).put("data", new JSONObject().put("project", e.getTitle())));
+        progress.setProgress(60);
         editableProject = new EditableProject(
                 project.getString("id"),
                 project.getString("name"),
                 getLanguage(project.getString("language")),
                 project.getJSONArray("paths").toList().stream().map(o -> (String) o).collect(Collectors.toList()));
-        editorView = new EditorView(editableProject);
+        progress.setProgress(70);
+        SwingUtilities.invokeLater(() -> {
+            editorView = new EditorView(editableProject, this);
+        });
+        progress.setProgress(100);
+        progress.close();
+        return true;
     }
 
     private Language getLanguage(String id) {

@@ -33,7 +33,7 @@ public class CodeTreeRenderer extends DefaultTreeCellRenderer {
 
         String path = pathBuilder.toString();
 
-        if(path.contains("\\.")){
+        if(path.contains(".")){
             setIcon(Icons.FILE);
         } else if(expanded){
             setIcon(Icons.OPEN_FOLDER);
@@ -42,7 +42,8 @@ public class CodeTreeRenderer extends DefaultTreeCellRenderer {
         }
 
         if (path.contains(project.getLanguage().getSrcPath())) {
-            if (str.split("\\.").length > 1) {
+            String[] parsedPath = str.split("\\.");
+            if (parsedPath.length > 0) {
                 setIcon(Icons.SOURCE_FOLDER_WHITE);
             }
         }
@@ -69,6 +70,10 @@ public class CodeTreeRenderer extends DefaultTreeCellRenderer {
             setIcon(Icons.JAVA_COLORIDO);
         } else if(str.endsWith(".rs")){
             setIcon(Icons.RUST_COLORIDO);
+        } else if(str.endsWith(".png") || str.endsWith(".jpg") || str.endsWith(".gif")){
+            setIcon(Icons.IMAGE);
+        } else if(str.endsWith(".sh") || str.endsWith(".bat")){
+            setIcon(Icons.CMD);
         }
 
         switch (str) {
@@ -89,6 +94,10 @@ public class CodeTreeRenderer extends DefaultTreeCellRenderer {
             case ".project": {
                 setIcon(Icons.ECLIPSE);
                 break;
+            }
+            case "Cargo.lock":
+            case "Cargo.toml":{
+                setIcon(Icons.CARGO_RUST);
             }
         }
 

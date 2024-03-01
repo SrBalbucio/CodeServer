@@ -5,16 +5,17 @@ import org.codeserver.editor.renderer.CodeTreeRenderer;
 import org.codeserver.model.EditableProject;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeNode;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ExplorerPanel extends JScrollPane  {
+public class ExplorerPanel extends JScrollPane implements TreeSelectionListener, MouseListener {
 
     private DefaultMutableTreeNode nodeRoot;
     private DefaultTreeModel treeModel;
@@ -31,6 +32,8 @@ public class ExplorerPanel extends JScrollPane  {
         Collections.sort(project.getPaths());
         this.fileTree = createJTree(project.getPaths());
         this.fileTree.setCellRenderer(new CodeTreeRenderer(project));
+        this.fileTree.addTreeSelectionListener(this);
+        this.fileTree.addMouseListener(this);
         this.getViewport().setView(fileTree);
     }
 
@@ -55,13 +58,14 @@ public class ExplorerPanel extends JScrollPane  {
                 if (i == 0) {
                     srcNode = new DefaultMutableTreeNode(srcPaths[i]);
                     root.add(srcNode);
-                    srcPathing.append(srcPaths[i]);
+                    srcPathing.append(srcPaths[i]).append("/");
                 } else {
                     DefaultMutableTreeNode node = new DefaultMutableTreeNode(srcPaths[i]);
                     srcNode.add(node);
                     srcNode = node;
                     srcPathing.append(srcPaths[i]).append("/");
                 }
+                System.out.println(srcPathing.toString()+srcPaths[i]);
             }
         }
 
@@ -81,8 +85,6 @@ public class ExplorerPanel extends JScrollPane  {
             }
 
             String className = parts[parts.length - 1];
-            System.out.println(className);
-            System.out.println(javaPackage);
 
             parentNode = findOrCreateNode(finalSrcNode, javaPackage.toString());
             DefaultMutableTreeNode classNode = new DefaultMutableTreeNode(className);
@@ -113,7 +115,6 @@ public class ExplorerPanel extends JScrollPane  {
                 }
             }
         }
-        System.out.println(nodeName);
         DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(nodeName);
         parent.add(newNode);
         return newNode;
@@ -126,5 +127,43 @@ public class ExplorerPanel extends JScrollPane  {
 
     private boolean containsPath(String path, List<String> paths){
         return paths.stream().anyMatch(p -> p.contains(path));
+    }
+
+    @Override
+    public void valueChanged(TreeSelectionEvent e) {
+        System.out.println(e.getPath().toString());
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        int selRow = fileTree.getRowForLocation(e.getX(), e.getY());
+        TreePath selPath = fileTree.getPathForLocation(e.getX(), e.getY());
+        if(selRow != -1) {
+            if(e.getClickCount() == 1) {
+            }
+            else if(e.getClickCount() == 2) {
+                // open new tab
+            }
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }
