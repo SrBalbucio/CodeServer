@@ -3,6 +3,7 @@ package org.codeserver.editor;
 import lombok.Getter;
 import org.codeserver.editor.components.ExplorerPanel;
 import org.codeserver.editor.components.MenuBar;
+import org.codeserver.editor.components.StatusBar;
 import org.codeserver.editor.components.TabbedPanel;
 import org.codeserver.main.CodeClient;
 import org.codeserver.model.EditableProject;
@@ -21,6 +22,8 @@ public class EditorView extends JFrame {
     private EditableProject project;
     @Getter
     private CodeClient client;
+    @Getter
+    private StatusBar statusBar;
 
     public EditorView(EditableProject project, CodeClient client){
         super("CodeServer - "+project.getName());
@@ -28,6 +31,7 @@ public class EditorView extends JFrame {
         this.client = client;
         this.setLayout(new BorderLayout());
         this.add(getCenter(), BorderLayout.CENTER);
+        this.add((statusBar = new StatusBar(this)), BorderLayout.SOUTH);
         this.setJMenuBar(new MenuBar(this));
         this.setSize(1280, 720);
         this.setVisible(true);

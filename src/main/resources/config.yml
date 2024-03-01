@@ -26,6 +26,8 @@ users:
     password: "admin123"
 
 # Configure the programming languages you want to use
+# To find out what the SyntaxName of your language is, look here:
+# https://github.com/bobbylight/RSyntaxTextArea/blob/master/RSyntaxTextArea/src/main/java/org/fife/ui/rsyntaxtextarea/SyntaxConstants.java
 languages:
   java: # ID of Language
     name: "Java" # Name of Language
@@ -33,9 +35,11 @@ languages:
     src: "src/main/java" # SRC Path
     resource: "src/main/resource" # Resource Path
     fileExtension: ".java" # File Extesion of Language
+    syntaxName: "text/java" #YOUR SYNTAX NAME
   rust:
     name: "Rust"
     icon: "icons/rust.png"
     src: "src"
     resource: "/"
     fileExtension: ".rs"
+    syntaxName: "text/rust"

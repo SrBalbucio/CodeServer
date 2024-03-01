@@ -2,6 +2,7 @@ package org.codeserver.model;
 
 import lombok.Getter;
 import org.bukkit.configuration.ConfigurationSection;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
@@ -23,21 +24,28 @@ public class Language {
     @Getter
     private String fileExtesion;
     @Getter
+    private String syntaxName;
+    @Getter
     private String imagePath;
     private String imageBase64;
 
-    public Language(String id, String name, String srcPath, String resourcePath, String fileExtesion, String imagePath) {
+    public Language(String id, String name, String srcPath, String resourcePath, String fileExtesion, String imagePath, String syntaxName) {
         this.id = id;
         this.name = name;
         this.srcPath = srcPath;
         this.resourcePath = resourcePath;
         this.imagePath = imagePath;
         this.fileExtesion = fileExtesion;
+        this.syntaxName = syntaxName;
         try {
             this.imageBase64 = imageToBase64(ImageIO.read(new File(imagePath)), imagePath.split("\\.")[1]);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isSupportedFile(String path) {
+        return path.endsWith(fileExtesion);
     }
 
     public String imageToBase64(Image image, String formatName) {
@@ -73,7 +81,10 @@ public class Language {
     }
 
     public static Language fromSection(String langId, ConfigurationSection section) {
-        return new Language(langId, section.getString("name"), section.getString("src"), section.getString("resource"), section.getString("fileExtension"), section.getString("icon"));
+        return new Language(langId, section.getString("name"),
+                section.getString("src"), section.getString("resource"),
+                section.getString("fileExtension"), section.getString("icon"),
+                section.getString("syntaxName"));
     }
 
 }

@@ -2,14 +2,17 @@ package org.codeserver.editor.components;
 
 import lombok.Getter;
 import org.codeserver.editor.EditorView;
+import org.codeserver.main.CodeClient;
 import org.json.JSONObject;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 
-public class TabbedPanel extends JTabbedPane {
+public class TabbedPanel extends JTabbedPane implements ChangeListener {
 
     @Getter
     private EditorView view;
@@ -17,6 +20,7 @@ public class TabbedPanel extends JTabbedPane {
     public TabbedPanel(EditorView view) {
         super();
         this.view = view;
+        this.addChangeListener(this);
     }
 
     public FileTab createNewFileTab(TreePath node) {
@@ -47,7 +51,7 @@ public class TabbedPanel extends JTabbedPane {
         if (!json.has("document")) {
             return null;
         }
-        FileTab tab = new FileTab(path, json.getString("document"), this);
+        FileTab tab = new FileTab(path, json.getString("document"), this, CodeClient.getLanguageByPath(paths[paths.length - 1]));
         this.addTab(paths[paths.length - 1], tab);
         int index = this.indexOfTab(paths[paths.length - 1]);
         JPanel pnlTab = new JPanel(new GridBagLayout());
@@ -77,5 +81,10 @@ public class TabbedPanel extends JTabbedPane {
             }
         });
         return tab;
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+
     }
 }

@@ -28,6 +28,7 @@ public class Icons {
     public static ImageIcon CARGO_RUST;
     public static ImageIcon IMAGE;
     public static ImageIcon CMD;
+    public static ImageIcon PING;
 
     static {
         try {
@@ -50,7 +51,7 @@ public class Icons {
             OPEN_FOLDER = new ImageIcon(resizeImage("/icons/open-folder.png", 16, 16));
             CARGO_RUST = new ImageIcon(resizeImage("/icons/cargo-rust.png", 16, 16));
             IMAGE = new ImageIcon(resizeImage("/icons/image-2.png", 16, 16));
-            CMD = new ImageIcon(resizeImage("/icons/cmd.png", 16, 16));
+            PING = new ImageIcon(resizeImage("/icons/ping.png", 16, 16));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

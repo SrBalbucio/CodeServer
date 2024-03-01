@@ -100,11 +100,16 @@ public class CodeClient {
         return true;
     }
 
-    private Language getLanguage(String id) {
+    public static Language getLanguage(String id) {
         return languages.stream().filter(l -> l.getId().equalsIgnoreCase(id)).findFirst().orElse(null);
+    }
+
+    public static Language getLanguageByPath(String path) {
+        return languages.stream().filter(l -> l.isSupportedFile(path)).findFirst().orElse(null);
     }
 
     public Object request(String method, Object object){
         return client.request(method, new JSONObject().put("token", token).put("data", object));
     }
+
 }
