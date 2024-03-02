@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,6 +86,17 @@ public class Project {
         File file = new File(rootPath, filePath);
         if (!file.exists()) {
             return null;
+        }
+        return file;
+    }
+
+    public File createFile(String path, String fileName) throws IOException {
+        File file = new File(rootPath+"/"+path, fileName);
+        if(file.getParentFile() != null && !file.getParentFile().exists()){
+            file.getParentFile().mkdirs();
+        }
+        if(!file.exists()){
+            file.createNewFile();
         }
         return file;
     }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.codeserver.editor.EditorView;
 import org.codeserver.editor.tabs.FileTab;
 import org.codeserver.main.CodeClient;
+import org.codeserver.utils.PathUtils;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -25,18 +26,7 @@ public class TabbedPanel extends JTabbedPane implements ChangeListener {
     }
 
     public FileTab createNewFileTab(TreePath node) {
-        StringBuilder pathBuilder = new StringBuilder();
-        for (int i = 1; i < node.getPathCount(); i++) {
-            DefaultMutableTreeNode mtn = ((DefaultMutableTreeNode) node.getPath()[i]);
-            String str = mtn.getUserObject().toString();
-            if ((node.getPathCount() - 1) == i && mtn.getChildCount() <= 0) {
-                pathBuilder.append("/").append(str);
-            } else{
-                pathBuilder.append("/").append(str.replace(".", "/"));
-            }
-        }
-
-        String path = pathBuilder.toString();
+        String path = PathUtils.generatePath(node);
         String[] paths = path.split("/");
         System.out.println(path);
 

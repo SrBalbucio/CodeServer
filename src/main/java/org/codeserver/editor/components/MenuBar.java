@@ -57,6 +57,14 @@ public class MenuBar extends JMenuBar {
 
     public JMenu getFileMenu(){
         JMenu menu = new JMenu("File");
+        {
+            JMenuItem newFile = new JMenuItem("New File...");
+            newFile.addActionListener((e) -> {
+                view.getClient().loadProjects();
+            });
+            newFile.setAccelerator(KeyStroke.getKeyStroke("ctrl f1"));
+            menu.add(newFile);
+        }
         return menu;
     }
 }

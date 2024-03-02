@@ -47,7 +47,7 @@ public class Icons {
             RUST_COLORIDO = new ImageIcon(resizeImage("/icons/rust-colorido.png", 18, 18));
             ECLIPSE = new ImageIcon(resizeImage("/icons/eclipse.png", 16, 16));
             FILE = new ImageIcon(resizeImage("/icons/file.png", 16, 16));
-            FILE = new ImageIcon(resizeImage("/icons/file.png", 16, 16));
+            CMD = new ImageIcon(resizeImage("/icons/cmd.png", 16, 16));
             FOLDER = new ImageIcon(resizeImage("/icons/folder.png", 16, 16));
             OPEN_FOLDER = new ImageIcon(resizeImage("/icons/open-folder.png", 16, 16));
             CARGO_RUST = new ImageIcon(resizeImage("/icons/cargo-rust.png", 16, 16));

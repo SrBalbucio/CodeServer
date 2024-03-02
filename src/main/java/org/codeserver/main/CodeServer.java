@@ -251,6 +251,22 @@ public class CodeServer implements IDelegate {
             projectByUser.get(data.getKey()).stream().filter(p -> p.equals(project)).findFirst().ifPresent(p -> {
                 projectByUser.get(data.getKey()).remove(p);
             });
+        } else if(key.equalsIgnoreCase("create_file")){
+            Project project = getProjectByName(data.getValue().getString("projectName"));
+            if(project != null){
+                try {
+                    project.createFile(data.getValue().getString("path"), data.getValue().getString("fileName"));
+                    return new JSONObject().put("error", false);
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                    return new JSONObject().put("error", true).put("message", "Could not create this file! Check the server to find out more.");
+                }
+            }
+        } else if(key.equalsIgnoreCase("update_paths")){
+            Project project = getProjectByName(data.getValue().getString("projectName"));
+            if(project != null){
+                return new JSONArray(project.listarArquivos());
+            }
         }
 
         return null;

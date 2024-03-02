@@ -3,6 +3,7 @@ package org.codeserver.editor.components;
 import org.codeserver.editor.EditorView;
 import org.codeserver.editor.renderer.CodeTreeRenderer;
 import org.codeserver.model.EditableProject;
+import org.codeserver.utils.PathUtils;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -38,6 +39,10 @@ public class ExplorerPanel extends JScrollPane implements TreeSelectionListener,
     }
 
     public JTree createJTree(List<String> paths) {
+        return new JTree(createTreeModel(paths));
+    }
+
+    public DefaultTreeModel createTreeModel(List<String> paths){
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(project.getName() + " (" + project.getId() + ")");
 
         // BOTA AS PASTAS
@@ -100,8 +105,7 @@ public class ExplorerPanel extends JScrollPane implements TreeSelectionListener,
             }
         });
 
-
-        return new JTree(new DefaultTreeModel(root));
+        return new DefaultTreeModel(root);
     }
 
     private DefaultMutableTreeNode findOrCreateNode(DefaultMutableTreeNode parent, String nodeName) {
@@ -120,9 +124,13 @@ public class ExplorerPanel extends JScrollPane implements TreeSelectionListener,
         return newNode;
     }
 
+    public void updatePaths(List<String> paths){
+        fileTree.setModel(createTreeModel(paths));
+    }
+
     private boolean isFile(String path) {
         String[] parts = path.split("/");
-        return parts[parts.length - 1].contains(".");
+        return parts[parts.length - 1].contains(".") && !parts[parts.length - 1].startsWith(".");
     }
 
     private boolean containsPath(String path, List<String> paths){
@@ -136,7 +144,6 @@ public class ExplorerPanel extends JScrollPane implements TreeSelectionListener,
 
     @Override
     public void mouseClicked(MouseEvent e) {
-
     }
 
     @Override
@@ -149,6 +156,16 @@ public class ExplorerPanel extends JScrollPane implements TreeSelectionListener,
             else if(e.getClickCount() == 2) {
                 view.getTabbedPanel().createNewFileTab(selPath);
             }
+        }
+
+        if(SwingUtilities.isRightMouseButton(e)){
+            JPopupMenu menu = new JPopupMenu();
+            {
+                JMenuItem newFile = new JMenuItem("New File...");
+                newFile.addActionListener((event) -> view.createNewFile(PathUtils.generatePath(selPath)));
+                menu.add(newFile);
+            }
+            menu.show(this, e.getX(),  e.getY());
         }
     }
 
