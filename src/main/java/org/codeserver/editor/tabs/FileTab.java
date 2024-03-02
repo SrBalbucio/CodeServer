@@ -2,6 +2,7 @@ package org.codeserver.editor.tabs;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.codeserver.editor.components.HtmlPane;
 import org.codeserver.editor.components.TabbedPanel;
 import org.codeserver.model.Language;
 import org.fife.rsta.ac.LanguageSupportFactory;
@@ -51,6 +52,8 @@ public class FileTab extends JPanel implements DocumentListener {
     private RTextScrollPane scrollPane;
     private RSyntaxTextArea syntaxArea;
     private AutoCompletion autoCompletion;
+    private boolean hasMdPanel = false;
+    private HtmlPane mdPanel;
 
     public JComponent getCenterPanel() {
         syntaxArea = new RSyntaxTextArea(document);
@@ -63,6 +66,12 @@ public class FileTab extends JPanel implements DocumentListener {
         autoCompletion.install(syntaxArea);
         scrollPane = new RTextScrollPane(syntaxArea);
         addLanguageSupport(syntax);
+        if(getFileExtension().equalsIgnoreCase("md")){
+            hasMdPanel = true;
+            this.mdPanel = new HtmlPane();
+            mdPanel.load(document);
+            return new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, new JScrollPane(mdPanel));
+        }
         return scrollPane;
     }
 
@@ -135,6 +144,7 @@ public class FileTab extends JPanel implements DocumentListener {
                 .put("projectName", panel.getView().getProject().getName())
                 .put("offset", e.getOffset())
                 .put("text", e.getDocument().getText(e.getOffset(), e.getLength())));
+        updateMDPanel();
     }
 
     @Override
@@ -145,6 +155,7 @@ public class FileTab extends JPanel implements DocumentListener {
                 .put("projectName", panel.getView().getProject().getName())
                 .put("offset", e.getOffset())
                 .put("length", e.getLength()));
+        updateMDPanel();
     }
 
     @Override
@@ -156,5 +167,12 @@ public class FileTab extends JPanel implements DocumentListener {
                 .put("offset", e.getOffset())
                 .put("length", e.getLength())
                 .put("text", e.getDocument().getText(e.getOffset(), e.getLength())));
+        updateMDPanel();
+    }
+
+    public void updateMDPanel(){
+        if(hasMdPanel){
+            mdPanel.load(document);
+        }
     }
 }

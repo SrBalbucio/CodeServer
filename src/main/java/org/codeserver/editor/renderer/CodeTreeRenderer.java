@@ -74,6 +74,8 @@ public class CodeTreeRenderer extends DefaultTreeCellRenderer {
             setIcon(Icons.IMAGE);
         } else if(str.endsWith(".sh") || str.endsWith(".bat")){
             setIcon(Icons.CMD);
+        } else if(str.endsWith(".md")){
+            setIcon(Icons.MARKDOWN_ICON);
         }
 
         switch (str) {

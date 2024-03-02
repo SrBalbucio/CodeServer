@@ -36,17 +36,23 @@ public class Document {
         }
         executor.scheduleAtFixedRate(() -> {
             try {
-                FileOutputStream outputStream = new FileOutputStream(file);
-                outputStream.write(builder.toString().getBytes(StandardCharsets.UTF_8));
-                outputStream.flush();
-                outputStream.close();
+                save();
             } catch (Exception e){
                 e.printStackTrace();
             }
         }, 20, 5, TimeUnit.SECONDS);
     }
 
-    
+    public void save(){
+        try {
+            FileOutputStream outputStream = new FileOutputStream(file);
+            outputStream.write(builder.toString().getBytes(StandardCharsets.UTF_8));
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
     public void remove(int offs, int len) {
         builder.delete(offs, offs+len);
     }

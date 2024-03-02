@@ -29,6 +29,7 @@ public class Icons {
     public static ImageIcon IMAGE;
     public static ImageIcon CMD;
     public static ImageIcon PING;
+    public static ImageIcon MARKDOWN_ICON;
 
     static {
         try {
@@ -52,6 +53,7 @@ public class Icons {
             CARGO_RUST = new ImageIcon(resizeImage("/icons/cargo-rust.png", 16, 16));
             IMAGE = new ImageIcon(resizeImage("/icons/image-2.png", 16, 16));
             PING = new ImageIcon(resizeImage("/icons/ping.png", 16, 16));
+            MARKDOWN_ICON = new ImageIcon(resizeImage("/icons/markdown.png", 16, 16));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

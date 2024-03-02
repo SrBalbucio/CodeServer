@@ -241,6 +241,7 @@ public class CodeServer implements IDelegate {
                 documentByUser.get(data.getKey()).stream().filter(d -> d.getPath().equals(path) && d.getProject().equals(project)).findFirst().ifPresent(d -> {
                     documentByUser.get(data.getKey()).remove(d);
                     if(documentByUser.values().stream().noneMatch(l -> l.contains(d))){
+                        d.save();
                         openedDocuments.remove(d);
                     }
                 });

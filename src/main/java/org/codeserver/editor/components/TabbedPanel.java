@@ -79,7 +79,7 @@ public class TabbedPanel extends JTabbedPane implements ChangeListener {
 
         btnClose.addActionListener((e) -> {
             if (index >= 0) {
-                this.removeTabAt(index);
+                this.removeTabAt(this.indexOfTab(paths[paths.length - 1]));
                 view.getClient().request("close_document_file", new JSONObject().put("path", path).put("projectName", view.getProject().getName()));
             }
         });
