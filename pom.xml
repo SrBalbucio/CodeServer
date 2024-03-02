@@ -85,6 +85,16 @@
             <artifactId>languagesupport</artifactId>
             <version>3.3.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>0.21.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark-ext-gfm-tables</artifactId>
+            <version>0.17.1</version>
+        </dependency>
     </dependencies>
 
 </project>
