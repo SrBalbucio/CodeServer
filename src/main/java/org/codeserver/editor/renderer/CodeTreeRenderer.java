@@ -103,6 +103,10 @@ public class CodeTreeRenderer extends DefaultTreeCellRenderer {
             }
         }
 
+        if(str.equalsIgnoreCase(project.getName()+" ("+project.getId()+")")){
+            setIcon(Icons.FOLDER_EXTENSION);
+        }
+
         return c;
     }
 }

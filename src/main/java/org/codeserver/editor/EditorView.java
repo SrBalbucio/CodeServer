@@ -15,6 +15,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -83,6 +84,9 @@ public class EditorView extends JFrame implements WindowListener {
                 client.getUi().showErrorDialog("Unable to delete the file/path!", "File not deleted :C");
             }
         }, () -> {});
+    }
+
+    public void moveFiles(TreePath... paths){
     }
 
     @Override

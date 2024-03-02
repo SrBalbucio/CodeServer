@@ -148,6 +148,7 @@ public class ExplorerPanel extends JScrollPane implements TreeSelectionListener,
 
     @Override
     public void mousePressed(MouseEvent e) {
+        TreePath[] selPaths = fileTree.getSelectionPaths();
         int selRow = fileTree.getRowForLocation(e.getX(), e.getY());
         TreePath selPath = fileTree.getPathForLocation(e.getX(), e.getY());
         if(selRow != -1) {
@@ -157,6 +158,7 @@ public class ExplorerPanel extends JScrollPane implements TreeSelectionListener,
                 view.getTabbedPanel().createNewFileTab(selPath);
             }
         }
+
 
         if(SwingUtilities.isRightMouseButton(e)){
             JPopupMenu menu = new JPopupMenu();
@@ -169,6 +171,7 @@ public class ExplorerPanel extends JScrollPane implements TreeSelectionListener,
                         menu.add(newFile);
                     }
                 } else {
+
                 }
 
                 {
@@ -177,10 +180,27 @@ public class ExplorerPanel extends JScrollPane implements TreeSelectionListener,
                     delete.addActionListener((event) -> view.deleteFile(path));
                     menu.add(delete);
                 }
-                menu.show(this, e.getX(), e.getY());
-            } else{
 
+                {
+                    JMenuItem move = new JMenuItem("Move...");
+                    move.addActionListener((event) -> view.moveFiles(selPath));
+                    menu.add(move);
+                }
+            } else if(selPaths != null){
+                {
+                    JMenuItem move = new JMenuItem("Move files...");
+                    move.addActionListener((event) -> view.moveFiles(selPaths));
+                    menu.add(move);
+                }
             }
+
+            menu.addSeparator();
+            {
+                JMenuItem delete = new JMenuItem("Reload Files");
+                delete.addActionListener((event) -> view.updatePathsOfProject());
+                menu.add(delete);
+            }
+            menu.show(this, e.getX(), e.getY());
         }
     }
 
