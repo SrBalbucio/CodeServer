@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.configuration.ConfigurationSection;
+import org.codeserver.main.CodeServer;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -28,6 +29,7 @@ public class Project {
     @NonNull
     @Getter
     private String language;
+    private List<Submodule> submodules;
     private File rootPath;
 
     public Project(@NonNull String id, @NonNull String name, @NonNull String path, @NonNull String language) {
@@ -116,6 +118,7 @@ public class Project {
 
     public static Project fromSection(String id, ConfigurationSection section) {
         Project project = new Project(id, section.getString("name"), section.getString("path"), section.getString("language"));
+        CodeServer.logger.info("The project "+project.getName()+"("+id+") was loaded successfully!");
         return project;
     }
 }

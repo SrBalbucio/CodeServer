@@ -33,7 +33,7 @@ public class CodeServer implements IDelegate {
     private static Algorithm ALGORITHM;
 
     private boolean running = false;
-    private Logger logger;
+    public static Logger logger;
     private Server server;
     private YamlConfiguration config;
     private CopyOnWriteArrayList<Project> projects = new CopyOnWriteArrayList<>();
@@ -50,9 +50,9 @@ public class CodeServer implements IDelegate {
         this.server = new Server(port, this);
         loadConfig();
         server.start();
+        logger.info("The server was successfully started on port "+port+"!");
         running = true;
-        while (running) {
-        }
+        while (running) {}
     }
 
     public void configureLogger() {
@@ -105,6 +105,7 @@ public class CodeServer implements IDelegate {
                             .sign(ALGORITHM);
                     json.put("token", token);
                     tokens.put(token, System.currentTimeMillis() + 1000 * 60 * config.getInt("disconnectionTime"));
+                    logger.info("The user "+user+" logged in successfully!");
                 });
         return json;
     }
