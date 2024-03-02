@@ -101,6 +101,11 @@ public class Project {
         return file;
     }
 
+    public boolean deleteFile(String path){
+        File file = new File(rootPath, path);
+        return file.delete();
+    }
+
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         json.put("name", name);

@@ -74,6 +74,17 @@ public class EditorView extends JFrame implements WindowListener {
         }
     }
 
+    public void deleteFile(String path){
+        client.getUi().showConfirmDialog("Do you really want to delete the file/path? \nFile/path: "+path, "Delete File", () -> {
+            boolean approved = (boolean) client.request("delete_file", new JSONObject().put("path", path).put("projectName", project.getName()));
+            if(approved){
+                updatePathsOfProject();
+            } else{
+                client.getUi().showErrorDialog("Unable to delete the file/path!", "File not deleted :C");
+            }
+        }, () -> {});
+    }
+
     @Override
     public void windowOpened(WindowEvent e) {
 

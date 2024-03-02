@@ -160,12 +160,27 @@ public class ExplorerPanel extends JScrollPane implements TreeSelectionListener,
 
         if(SwingUtilities.isRightMouseButton(e)){
             JPopupMenu menu = new JPopupMenu();
-            {
-                JMenuItem newFile = new JMenuItem("New File...");
-                newFile.addActionListener((event) -> view.createNewFile(PathUtils.generatePath(selPath)));
-                menu.add(newFile);
+            if(selPath != null) {
+                String path = PathUtils.generatePath(selPath);
+                if (!isFile(path)) {
+                    {
+                        JMenuItem newFile = new JMenuItem("New File...");
+                        newFile.addActionListener((event) -> view.createNewFile(path));
+                        menu.add(newFile);
+                    }
+                } else {
+                }
+
+                {
+                    JMenuItem delete = new JMenuItem("Delete");
+                    delete.setAccelerator(KeyStroke.getKeyStroke("delete"));
+                    delete.addActionListener((event) -> view.deleteFile(path));
+                    menu.add(delete);
+                }
+                menu.show(this, e.getX(), e.getY());
+            } else{
+
             }
-            menu.show(this, e.getX(),  e.getY());
         }
     }
 

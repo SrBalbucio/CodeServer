@@ -267,6 +267,12 @@ public class CodeServer implements IDelegate {
             if(project != null){
                 return new JSONArray(project.listarArquivos());
             }
+        } else if(key.equalsIgnoreCase("delete_file")){
+            Project project = getProjectByName(data.getValue().getString("projectName"));
+            if(project != null){
+                return project.deleteFile(data.getValue().getString("path"));
+            }
+            return false;
         }
 
         return null;
