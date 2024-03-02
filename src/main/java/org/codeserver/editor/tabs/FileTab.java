@@ -1,10 +1,10 @@
-package org.codeserver.editor.components;
+package org.codeserver.editor.tabs;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
+import org.codeserver.editor.components.TabbedPanel;
 import org.codeserver.model.Language;
-import org.fife.rsta.ac.LanguageSupport;
 import org.fife.rsta.ac.LanguageSupportFactory;
-import org.fife.rsta.ac.java.JavaLanguageSupport;
 import org.fife.ui.autocomplete.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -31,9 +31,12 @@ public class FileTab extends JPanel implements DocumentListener {
         }
     }
 
+    @Getter
     private String path;
+    @Getter
     private String document;
     private TabbedPanel panel;
+    @Getter
     private Language language;
 
     public FileTab(String path, String document, TabbedPanel panel, Language language) {
@@ -43,7 +46,6 @@ public class FileTab extends JPanel implements DocumentListener {
         this.language = language;
         this.setLayout(new BorderLayout());
         this.add(getCenterPanel(), BorderLayout.CENTER);
-        addLanguageSupport();
     }
 
     private RTextScrollPane scrollPane;
@@ -54,11 +56,13 @@ public class FileTab extends JPanel implements DocumentListener {
         syntaxArea = new RSyntaxTextArea(document);
         syntaxArea.getDocument().addDocumentListener(this);
         syntaxArea.setCodeFoldingEnabled(true);
-        syntaxArea.setSyntaxEditingStyle(language.getSyntaxName());
+        String syntax = language != null ? language.getSyntaxName() : trySearchSyntax();
+        syntaxArea.setSyntaxEditingStyle(syntax);
         DARK_THEME.apply(syntaxArea);
         autoCompletion = new AutoCompletion(createCompletionProvider());
         autoCompletion.install(syntaxArea);
         scrollPane = new RTextScrollPane(syntaxArea);
+        addLanguageSupport(syntax);
         return scrollPane;
     }
 
@@ -95,7 +99,30 @@ public class FileTab extends JPanel implements DocumentListener {
 
     }
 
-    public void addLanguageSupport(){
+    public String trySearchSyntax(){
+        String fileName = getFileName();
+        if(fileName.endsWith(".xml")){
+            return SyntaxConstants.SYNTAX_STYLE_XML;
+        } else if(fileName.endsWith(".md")){
+            return SyntaxConstants.SYNTAX_STYLE_MARKDOWN;
+        } else if(fileName.endsWith(".bat")){
+            return SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH;
+        } else{
+            return "";
+        }
+    }
+
+    public String getFileName(){
+        String[] paths = path.split("/");
+        return paths[paths.length - 1];
+    }
+
+    public String getFileExtension(){
+        String[] paths = getFileName().split("\\.");
+        return paths[paths.length - 1];
+    }
+
+    public void addLanguageSupport(String syntax){
         LanguageSupportFactory lsf = LanguageSupportFactory.get();
         lsf.register(syntaxArea);
     }

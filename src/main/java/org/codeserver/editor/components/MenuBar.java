@@ -26,6 +26,7 @@ public class MenuBar extends JMenuBar {
             switchProject.addActionListener((e) -> {
                 view.setVisible(false);
                 view.dispose();
+                view.getClient().getOpenedProjects().remove(view.getProject());
                 view.getClient().loadProjects();
             });
             switchProject.setAccelerator(KeyStroke.getKeyStroke("F1"));
@@ -36,6 +37,7 @@ public class MenuBar extends JMenuBar {
             switchProject.addActionListener((e) -> {
                 view.setVisible(false);
                 view.dispose();
+                view.getClient().getOpenedProjects().remove(view.getProject());
                 view.getClient().loadProjects();
             });
             switchProject.setAccelerator(KeyStroke.getKeyStroke("F2"));

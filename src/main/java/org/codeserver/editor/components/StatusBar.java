@@ -6,9 +6,13 @@ import org.codeserver.utils.Icons;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class StatusBar extends JPanel {
 
+    private static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private EditorView view;
 
     public StatusBar(EditorView view){
@@ -16,10 +20,16 @@ public class StatusBar extends JPanel {
         setLayout(new BorderLayout());
         this.add(getWestPanel(), BorderLayout.WEST);
         this.add(getEastPanel(), BorderLayout.EAST);
+        executor.scheduleAtFixedRate(() -> {
+            if(view.getClient().isLogged()) {
+                pingLabel.setText(view.getClient().getClient().getTimeout()+" ms");
+            } else{
+                pingLabel.setText("Desconectado!");
+            }
+        }, 10, 15, TimeUnit.SECONDS);
     }
-
-    private JLabel languageLabel;
-    private JLabel pingLabel;
+    public JLabel languageLabel;
+    public JLabel pingLabel;
 
     public JPanel getWestPanel(){
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));

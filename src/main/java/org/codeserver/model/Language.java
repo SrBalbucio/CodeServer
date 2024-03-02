@@ -84,7 +84,7 @@ public class Language {
         return new Language(langId, section.getString("name"),
                 section.getString("src"), section.getString("resource"),
                 section.getString("fileExtension"), section.getString("icon"),
-                section.getString("syntaxName"));
+                section.getString("syntaxName", ""));
     }
 
 }

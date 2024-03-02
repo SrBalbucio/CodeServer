@@ -27,12 +27,17 @@ public class CodeClient {
 
     @Getter
     private UiBooster ui;
+    @Getter
     private boolean logged;
+    @Getter
     private String token;
+    @Getter
     private User user;
     @Getter
     private Client client;
-    private EditableProject editableProject;
+    @Getter
+    private List<EditableProject> openedProjects = new CopyOnWriteArrayList<>();
+    @Getter
     private EditorView editorView;
     public static CopyOnWriteArrayList<Language> languages = new CopyOnWriteArrayList<>();
     @Getter
@@ -86,11 +91,16 @@ public class CodeClient {
         progress.setProgress(10);
         JSONObject project = (JSONObject) client.request("select_project", new JSONObject().put("token", token).put("data", new JSONObject().put("project", e.getTitle())));
         progress.setProgress(60);
-        editableProject = new EditableProject(
+        if(openedProjects.stream().anyMatch(p -> p.getName().equalsIgnoreCase(project.getString("name")) && p.getId().equalsIgnoreCase(project.getString("id")))){
+            ui.showErrorDialog("This project is now open!", "Unable to open project!");
+            return false;
+        }
+        EditableProject editableProject = new EditableProject(
                 project.getString("id"),
                 project.getString("name"),
                 getLanguage(project.getString("language")),
                 project.getJSONArray("paths").toList().stream().map(o -> (String) o).collect(Collectors.toList()));
+        openedProjects.add(editableProject);
         progress.setProgress(70);
         SwingUtilities.invokeLater(() -> {
             editorView = new EditorView(editableProject, this);

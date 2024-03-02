@@ -2,6 +2,7 @@ package org.codeserver.editor.components;
 
 import lombok.Getter;
 import org.codeserver.editor.EditorView;
+import org.codeserver.editor.tabs.FileTab;
 import org.codeserver.main.CodeClient;
 import org.json.JSONObject;
 
@@ -53,6 +54,7 @@ public class TabbedPanel extends JTabbedPane implements ChangeListener {
         }
         FileTab tab = new FileTab(path, json.getString("document"), this, CodeClient.getLanguageByPath(paths[paths.length - 1]));
         this.addTab(paths[paths.length - 1], tab);
+        this.setSelectedIndex(this.indexOfTab(paths[paths.length - 1]));
         int index = this.indexOfTab(paths[paths.length - 1]);
         JPanel pnlTab = new JPanel(new GridBagLayout());
         pnlTab.setOpaque(false);
@@ -85,6 +87,10 @@ public class TabbedPanel extends JTabbedPane implements ChangeListener {
 
     @Override
     public void stateChanged(ChangeEvent e) {
-
+        if(this.getSelectedIndex() != -1) {
+            if (this.getTabComponentAt(this.getSelectedIndex()) instanceof FileTab fileTab) {
+                view.getStatusBar().languageLabel.setText(fileTab.getLanguage() != null ? fileTab.getLanguage().getName() : fileTab.getFileExtension());
+            }
+        }
     }
 }
