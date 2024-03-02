@@ -37,7 +37,7 @@ public class FileTab extends JPanel implements DocumentListener {
     private String document;
     private TabbedPanel panel;
     @Getter
-    private Language language;
+    public Language language;
 
     public FileTab(String path, String document, TabbedPanel panel, Language language) {
         this.path = path;
@@ -99,30 +99,30 @@ public class FileTab extends JPanel implements DocumentListener {
 
     }
 
-    public String trySearchSyntax(){
+    public String trySearchSyntax() {
         String fileName = getFileName();
-        if(fileName.endsWith(".xml")){
+        if (fileName.endsWith(".xml")) {
             return SyntaxConstants.SYNTAX_STYLE_XML;
-        } else if(fileName.endsWith(".md")){
+        } else if (fileName.endsWith(".md")) {
             return SyntaxConstants.SYNTAX_STYLE_MARKDOWN;
-        } else if(fileName.endsWith(".bat")){
+        } else if (fileName.endsWith(".bat")) {
             return SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH;
-        } else{
+        } else {
             return "";
         }
     }
 
-    public String getFileName(){
+    public String getFileName() {
         String[] paths = path.split("/");
         return paths[paths.length - 1];
     }
 
-    public String getFileExtension(){
+    public String getFileExtension() {
         String[] paths = getFileName().split("\\.");
         return paths[paths.length - 1];
     }
 
-    public void addLanguageSupport(String syntax){
+    public void addLanguageSupport(String syntax) {
         LanguageSupportFactory lsf = LanguageSupportFactory.get();
         lsf.register(syntaxArea);
     }
@@ -132,6 +132,7 @@ public class FileTab extends JPanel implements DocumentListener {
     public void insertUpdate(DocumentEvent e) {
         boolean edited = (boolean) panel.getView().getClient().request("insert_document", new JSONObject()
                 .put("path", path)
+                .put("projectName", panel.getView().getProject().getName())
                 .put("offset", e.getOffset())
                 .put("text", e.getDocument().getText(e.getOffset(), e.getLength())));
     }
@@ -141,6 +142,7 @@ public class FileTab extends JPanel implements DocumentListener {
     public void removeUpdate(DocumentEvent e) {
         boolean edited = (boolean) panel.getView().getClient().request("remove_document", new JSONObject()
                 .put("path", path)
+                .put("projectName", panel.getView().getProject().getName())
                 .put("offset", e.getOffset())
                 .put("length", e.getLength()));
     }
@@ -150,6 +152,7 @@ public class FileTab extends JPanel implements DocumentListener {
     public void changedUpdate(DocumentEvent e) {
         boolean edited = (boolean) panel.getView().getClient().request("change_document", new JSONObject()
                 .put("path", path)
+                .put("projectName", panel.getView().getProject().getName())
                 .put("offset", e.getOffset())
                 .put("length", e.getLength())
                 .put("text", e.getDocument().getText(e.getOffset(), e.getLength())));

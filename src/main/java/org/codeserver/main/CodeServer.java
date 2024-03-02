@@ -17,6 +17,7 @@ import org.codeserver.utils.Payload;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
@@ -44,16 +45,17 @@ public class CodeServer implements IDelegate {
     private ConcurrentHashMap<User, List<Project>> projectByUser = new ConcurrentHashMap<>();
 
 
-    public CodeServer(int port) throws Exception{
+    public CodeServer(int port) throws Exception {
         configureLogger();
         this.server = new Server(port, this);
         loadConfig();
         server.start();
         running = true;
-        while(running){}
+        while (running) {
+        }
     }
 
-    public void configureLogger(){
+    public void configureLogger() {
         this.logger = Logger.getLogger("SERVER-THREAD");
         ConsoleHandler handler = new ConsoleHandler();
         handler.setFormatter(new LoggerFormat());
@@ -84,13 +86,13 @@ public class CodeServer implements IDelegate {
             for (String key : users.getKeys(false)) {
                 this.users.add(new User(users.getString(key + ".user"), users.getString(key + ".password")));
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
     }
 
-    private JSONObject auth(String user, String password){
+    private JSONObject auth(String user, String password) {
         JSONObject json = new JSONObject();
         json.put("error", true);
         users.stream()
@@ -107,9 +109,9 @@ public class CodeServer implements IDelegate {
         return json;
     }
 
-    private Payload validate(JSONObject payload){
+    private Payload validate(JSONObject payload) {
         String token = payload.getString("token");
-        if(tokens.containsKey(token)) {
+        if (tokens.containsKey(token)) {
             // AQUI É MAIOR >>
             if (tokens.get(token) > System.currentTimeMillis()) {
                 String user = JWT.decode(token).getSubject();
@@ -120,23 +122,23 @@ public class CodeServer implements IDelegate {
         return null;
     }
 
-    public JSONArray listProjects(){
+    public JSONArray listProjects() {
         JSONArray array = new JSONArray();
         projects.forEach(p -> array.put(p.toJSON()));
         return array;
     }
 
-    public JSONArray listLanguages(){
+    public JSONArray listLanguages() {
         JSONArray array = new JSONArray();
         languages.forEach(l -> array.put(GSON.toJson(l)));
         return array;
     }
 
-    public Project getProjectByName(String project){
+    public Project getProjectByName(String project) {
         return projects.stream().filter(p -> p.getName().equalsIgnoreCase(project)).findFirst().orElse(null);
     }
 
-    public JSONObject selectProject(User user, String project){
+    public JSONObject selectProject(User user, String project) {
         JSONObject json = new JSONObject();
         Project p = getProjectByName(project);
         List<Project> pjs = projectByUser.getOrDefault(user, new CopyOnWriteArrayList<>());
@@ -154,40 +156,40 @@ public class CodeServer implements IDelegate {
 
         JSONObject payload = (JSONObject) o;
 
-        if(key.equalsIgnoreCase("login")){
+        if (key.equalsIgnoreCase("login")) {
             return auth(payload.getString("user"), payload.getString("password"));
         }
 
         Payload data = validate(payload);
 
-        if(data == null){
+        if (data == null) {
             return new JSONObject().put("error", true).put("message", "Your token is not valid or has expired!");
         }
 
-        if(key.equalsIgnoreCase("list_projects")){
+        if (key.equalsIgnoreCase("list_projects")) {
             return listProjects();
-        } else if(key.equalsIgnoreCase("select_project")){
+        } else if (key.equalsIgnoreCase("select_project")) {
             return selectProject(data.getKey(), data.getValue().getString("project"));
-        } else if(key.equalsIgnoreCase("list_languages")){
+        } else if (key.equalsIgnoreCase("list_languages")) {
             return listLanguages();
-        } else if(key.equalsIgnoreCase("download_file")){
+        } else if (key.equalsIgnoreCase("download_file")) {
 
-        } else if(key.equalsIgnoreCase("get_document_file")){
+        } else if (key.equalsIgnoreCase("get_document_file")) {
             Project project = getProjectByName(data.getValue().getString("projectName"));
             String path = data.getValue().getString("path");
             File file = project.getFile(path);
-            if(file == null){
+            if (file == null) {
                 return new JSONObject().put("error", true).put("message", "This file does not exist or the server cannot open it now!");
             }
-            if(file.isDirectory()){
+            if (file.isDirectory()) {
                 return new JSONObject().put("error", true).put("silent", true).put("message", "Is this shit a directory?????");
             }
-            Document document = openedDocuments.stream().filter(d -> d.getPath().equalsIgnoreCase(path)).findFirst().orElse(null);
-            if(document == null){
+            Document document = openedDocuments.stream().filter(d -> d.getPath().equalsIgnoreCase(path) && d.getProject().equals(project)).findFirst().orElse(null);
+            if (document == null) {
                 try {
-                    document = new Document(path, file);
+                    document = new Document(path, file, project);
                     openedDocuments.add(document);
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                     return new JSONObject().put("error", true).put("message", "This file does not exist or the server cannot open it now!");
                 }
@@ -198,37 +200,56 @@ public class CodeServer implements IDelegate {
             documentByUser.put(data.getKey(), documents);
 
             return new JSONObject().put("document", document.getText());
-        } else if(key.equalsIgnoreCase("insert_document")){
+        } else if (key.equalsIgnoreCase("insert_document")) {
             String path = data.getValue().getString("path");
+            String projectName = data.getValue().getString("projectName");
             int offset = data.getValue().getInt("offset");
             String text = data.getValue().getString("text");
-            Document document = documentByUser.get(data.getKey()).stream().filter(d -> d.getPath().equalsIgnoreCase(path)).findFirst().orElse(null);
-            if(document != null){
+            Document document = documentByUser.get(data.getKey()).stream().filter(d -> d.getPath().equalsIgnoreCase(path) && d.getProject().getName().equalsIgnoreCase(projectName)).findFirst().orElse(null);
+            if (document != null) {
                 document.insertString(offset, text);
                 return true;
             }
             return false;
-        } else if(key.equalsIgnoreCase("remove_document")){
+        } else if (key.equalsIgnoreCase("remove_document")) {
             String path = data.getValue().getString("path");
+            String projectName = data.getValue().getString("projectName");
             int offset = data.getValue().getInt("offset");
             int length = data.getValue().getInt("length");
-            Document document = documentByUser.get(data.getKey()).stream().filter(d -> d.getPath().equalsIgnoreCase(path)).findFirst().orElse(null);
-            if(document != null){
+            Document document = documentByUser.get(data.getKey()).stream().filter(d -> d.getPath().equalsIgnoreCase(path) && d.getProject().getName().equalsIgnoreCase(projectName)).findFirst().orElse(null);
+            if (document != null) {
                 document.remove(offset, length);
                 return true;
             }
             return false;
-        } else if(key.equalsIgnoreCase("change_document")){
+        } else if (key.equalsIgnoreCase("change_document")) {
             String path = data.getValue().getString("path");
+            String projectName = data.getValue().getString("projectName");
             int offset = data.getValue().getInt("offset");
             int length = data.getValue().getInt("length");
             String text = data.getValue().getString("text");
-            Document document = documentByUser.get(data.getKey()).stream().filter(d -> d.getPath().equalsIgnoreCase(path)).findFirst().orElse(null);
-            if(document != null){
-                document.replace(offset,length, text);
+            Document document = documentByUser.get(data.getKey()).stream().filter(d -> d.getPath().equalsIgnoreCase(path) && d.getProject().getName().equalsIgnoreCase(projectName)).findFirst().orElse(null);
+            if (document != null) {
+                document.replace(offset, length, text);
                 return true;
             }
             return false;
+        } else if (key.equalsIgnoreCase("close_document_file")) {
+            Project project = getProjectByName(data.getValue().getString("projectName"));
+            String path = data.getValue().getString("path");
+            if (project != null) {
+                documentByUser.get(data.getKey()).stream().filter(d -> d.getPath().equals(path) && d.getProject().equals(project)).findFirst().ifPresent(d -> {
+                    documentByUser.get(data.getKey()).remove(d);
+                    if(documentByUser.values().stream().noneMatch(l -> l.contains(d))){
+                        openedDocuments.remove(d);
+                    }
+                });
+            }
+        } else if(key.equalsIgnoreCase("close_project")){
+            Project project = getProjectByName(data.getValue().getString("projectName"));
+            projectByUser.get(data.getKey()).stream().filter(p -> p.equals(project)).findFirst().ifPresent(p -> {
+                projectByUser.get(data.getKey()).remove(p);
+            });
         }
 
         return null;

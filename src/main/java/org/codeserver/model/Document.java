@@ -17,12 +17,15 @@ public class Document {
 
     @Getter
     private String path;
+    @Getter
+    private Project project;
     private File file;
     private StringBuilder builder;
     private int lines = 0;
 
-    public Document(String path, File file) throws Exception {
+    public Document(String path, File file, Project project) throws Exception {
         this.path = path;
+        this.project = project;
         this.file = file;
         builder = new StringBuilder();
         BufferedReader reader = new BufferedReader(new FileReader(file));

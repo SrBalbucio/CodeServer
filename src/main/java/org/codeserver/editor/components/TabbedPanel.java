@@ -80,6 +80,7 @@ public class TabbedPanel extends JTabbedPane implements ChangeListener {
         btnClose.addActionListener((e) -> {
             if (index >= 0) {
                 this.removeTabAt(index);
+                view.getClient().request("close_document_file", new JSONObject().put("path", path).put("projectName", view.getProject().getName()));
             }
         });
         return tab;
@@ -87,10 +88,21 @@ public class TabbedPanel extends JTabbedPane implements ChangeListener {
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        if(this.getSelectedIndex() != -1) {
-            if (this.getTabComponentAt(this.getSelectedIndex()) instanceof FileTab fileTab) {
-                view.getStatusBar().languageLabel.setText(fileTab.getLanguage() != null ? fileTab.getLanguage().getName() : fileTab.getFileExtension());
+        try {
+            if (this.getSelectedIndex() != -1) {
+                System.out.print("TAB " + this.getSelectedIndex());
+                if (this.getComponentAt(this.getSelectedIndex()) instanceof FileTab fileTab) {
+                    if(fileTab.language != null){
+                        view.getStatusBar().languageLabel.setText(fileTab.language.getName());
+                    } else{
+                        view.getStatusBar().languageLabel.setText(fileTab.getFileExtension());
+                    }
+                }
+            } else{
+                view.getStatusBar().languageLabel.setText("");
             }
+        } catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 }

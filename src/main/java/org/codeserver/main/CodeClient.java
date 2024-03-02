@@ -28,6 +28,8 @@ public class CodeClient {
     @Getter
     private UiBooster ui;
     @Getter
+    private long lastPing;
+    @Getter
     private boolean logged;
     @Getter
     private String token;
@@ -119,7 +121,10 @@ public class CodeClient {
     }
 
     public Object request(String method, Object object){
-        return client.request(method, new JSONObject().put("token", token).put("data", object));
+        long i = System.currentTimeMillis();
+        Object obj = client.request(method, new JSONObject().put("token", token).put("data", object));
+        lastPing = System.currentTimeMillis() - i;
+        return obj;
     }
 
 }

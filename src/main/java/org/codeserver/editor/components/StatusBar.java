@@ -22,11 +22,11 @@ public class StatusBar extends JPanel {
         this.add(getEastPanel(), BorderLayout.EAST);
         executor.scheduleAtFixedRate(() -> {
             if(view.getClient().isLogged()) {
-                pingLabel.setText(view.getClient().getClient().getTimeout()+" ms");
+                pingLabel.setText(view.getClient().getLastPing()+" ms");
             } else{
                 pingLabel.setText("Desconectado!");
             }
-        }, 10, 15, TimeUnit.SECONDS);
+        }, 5, 1, TimeUnit.SECONDS);
     }
     public JLabel languageLabel;
     public JLabel pingLabel;
