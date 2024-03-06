@@ -6,6 +6,11 @@ disconnectionTime: 60
 security:
   secret: "SECRET-KEY"
 
+# This service allows you to download files or projects from the server, necessary for using WatchDog.
+downloadService:
+  enabled: true
+  port: 25567
+
 #Load Projects
 projects:
   login: # ID of Project

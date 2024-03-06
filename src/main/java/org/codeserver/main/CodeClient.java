@@ -1,5 +1,6 @@
 package org.codeserver.main;
 
+import balbucio.fts.FTSClient;
 import co.gongzh.procbridge.client.Client;
 import de.milchreis.uibooster.UiBooster;
 import de.milchreis.uibooster.components.ProgressDialog;
@@ -39,6 +40,8 @@ public class CodeClient {
     @Getter
     private Client client;
     @Getter
+    private FTSClient fileClient;
+    @Getter
     private List<EditableProject> openedProjects = new CopyOnWriteArrayList<>();
     @Getter
     private EditorView editorView;
@@ -62,6 +65,9 @@ public class CodeClient {
             if (token.getBoolean("error")) {
                 ui.showErrorDialog("The credentials entered are incorrect or you do not have permission on this server!", ":C");
                 System.exit(-1);
+            }
+            if(token.optBoolean("hasFileServer", false)) {
+                this.fileClient = new FTSClient(server[0], token.getInt("fileServerPort"));
             }
             logged = true;
             this.token = token.getString("token");

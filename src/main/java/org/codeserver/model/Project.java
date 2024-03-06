@@ -29,7 +29,9 @@ public class Project {
     @NonNull
     @Getter
     private String language;
+    @Getter
     private List<Submodule> submodules;
+    @Getter
     private File rootPath;
 
     public Project(@NonNull String id, @NonNull String name, @NonNull String path, @NonNull String language) {

@@ -1,5 +1,6 @@
 package org.codeserver.main;
 
+import balbucio.fts.FTSServer;
 import co.gongzh.procbridge.server.IDelegate;
 import co.gongzh.procbridge.server.Server;
 import com.auth0.jwt.JWT;
@@ -13,6 +14,7 @@ import org.codeserver.model.Document;
 import org.codeserver.model.Language;
 import org.codeserver.model.Project;
 import org.codeserver.model.User;
+import org.codeserver.utils.PathUtils;
 import org.codeserver.utils.Payload;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -36,6 +38,7 @@ public class CodeServer implements IDelegate {
     private boolean running = false;
     public static Logger logger;
     private Server server;
+    private FTSServer fileServer;
     private YamlConfiguration config;
     private CopyOnWriteArrayList<Project> projects = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<Language> languages = new CopyOnWriteArrayList<>();
@@ -93,6 +96,12 @@ public class CodeServer implements IDelegate {
         }
     }
 
+    private void initFileServer(){
+        if(config.getBoolean("downloadService.enabled")){
+            fileServer = new FTSServer(config.getInt("downloadServer.port"));
+        }
+    }
+
     private JSONObject auth(String user, String password) {
         JSONObject json = new JSONObject();
         json.put("error", true);
@@ -105,6 +114,8 @@ public class CodeServer implements IDelegate {
                             .withSubject(u.getUser())
                             .sign(ALGORITHM);
                     json.put("token", token);
+                    json.put("hasFileServer", config.getBoolean("downloadService.enabled", false));
+                    json.put("fileServerPort", config.getInt("downloadService.port", 25567));
                     tokens.put(token, System.currentTimeMillis() + 1000 * 60 * config.getInt("disconnectionTime"));
                     logger.info("The user "+user+" logged in successfully!");
                 });
@@ -279,8 +290,19 @@ public class CodeServer implements IDelegate {
             data.getKey().setAppSize(new Dimension(data.getValue().getInt("w"), data.getValue().getInt("h")));
         } else if (key.equalsIgnoreCase("update_screen_size")) {
             data.getKey().setScreenSize(new Dimension(data.getValue().getInt("w"), data.getValue().getInt("h")));
-        } else if (key.equalsIgnoreCase("init_watchdod")){
-
+        } else if(key.equalsIgnoreCase("has_fileserver")){
+            return fileServer != null;
+        } else if (key.equalsIgnoreCase("init_watchdog")){
+            Project project = getProjectByName(data.getValue().getString("projectName"));
+            if(project != null){
+                try {
+                    fileServer.serveFile(PathUtils.zipFolder(project.getRootPath(), "zippedProject"), project.getName());
+                    return new JSONObject().put("error", false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return new JSONObject().put("error", true).put("message", "Could not create this file! Check the server to find out more.");
+                }
+            }
         }
 
         return null;
