@@ -8,6 +8,7 @@ import org.codeserver.editor.components.StatusBar;
 import org.codeserver.editor.components.TabbedPanel;
 import org.codeserver.main.CodeClient;
 import org.codeserver.model.EditableProject;
+import org.codeserver.watchdog.WatchDog;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,12 +18,14 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
-public class EditorView extends JFrame implements WindowListener {
+public class EditorView extends JFrame implements WindowListener, ComponentListener {
 
     @Getter
     private EditableProject project;
@@ -75,18 +78,39 @@ public class EditorView extends JFrame implements WindowListener {
         }
     }
 
-    public void deleteFile(String path){
-        client.getUi().showConfirmDialog("Do you really want to delete the file/path? \nFile/path: "+path, "Delete File", () -> {
+    public void deleteFile(String path) {
+        client.getUi().showConfirmDialog("Do you really want to delete the file/path? \nFile/path: " + path, "Delete File", () -> {
             boolean approved = (boolean) client.request("delete_file", new JSONObject().put("path", path).put("projectName", project.getName()));
-            if(approved){
+            if (approved) {
                 updatePathsOfProject();
-            } else{
+            } else {
                 client.getUi().showErrorDialog("Unable to delete the file/path!", "File not deleted :C");
             }
-        }, () -> {});
+        }, () -> {
+        });
     }
 
-    public void moveFiles(TreePath... paths){
+    public void moveFiles(TreePath... paths) {
+    }
+
+    @Getter
+    private boolean startedWatchDog = false;
+    private WatchDog watchDog;
+
+    public void toggleWatchDog() {
+        if (startedWatchDog) {
+            startedWatchDog = false;
+        } else {
+            client.getUi().showConfirmDialog("WatchDog mode downloads project files to your PC and starts analyzing them in real time, allowing you to edit them in your preferred IDE.\n" +
+                    "\n" +
+                    "It is important that you terminate the App and WatchDog correctly so that no files are lost or leaked.\n" +
+                    "\n" +
+                    "Do you really want to continue?", "WatchDog Mode", () -> {
+                startedWatchDog = true;
+
+            }, () -> {
+            });
+        }
     }
 
     @Override
@@ -101,7 +125,7 @@ public class EditorView extends JFrame implements WindowListener {
 
     @Override
     public void windowClosed(WindowEvent e) {
-
+        client.checkIfCanClose();
     }
 
     @Override
@@ -121,6 +145,30 @@ public class EditorView extends JFrame implements WindowListener {
 
     @Override
     public void windowDeactivated(WindowEvent e) {
+
+    }
+
+    private GraphicsEnvironment environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        client.request("update_window_size", new JSONObject().put("h", this.getHeight()).put("w", this.getWidth()));
+        client.request("update_screen_size", new JSONObject().put("h", dim.getHeight()).put("w", dim.getWidth()));
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
 
     }
 }

@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
@@ -50,7 +51,7 @@ public class CodeServer implements IDelegate {
         this.server = new Server(port, this);
         loadConfig();
         server.start();
-        logger.info("The server was successfully started on port "+port+"!");
+        logger.info("\u001B[32mThe server was successfully started on port "+port+"!");
         running = true;
         while (running) {}
     }
@@ -274,6 +275,12 @@ public class CodeServer implements IDelegate {
                 return project.deleteFile(data.getValue().getString("path"));
             }
             return false;
+        } else if (key.equalsIgnoreCase("update_window_size")) {
+            data.getKey().setAppSize(new Dimension(data.getValue().getInt("w"), data.getValue().getInt("h")));
+        } else if (key.equalsIgnoreCase("update_screen_size")) {
+            data.getKey().setScreenSize(new Dimension(data.getValue().getInt("w"), data.getValue().getInt("h")));
+        } else if (key.equalsIgnoreCase("init_watchdod")){
+
         }
 
         return null;

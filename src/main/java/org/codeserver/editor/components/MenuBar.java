@@ -12,14 +12,15 @@ public class MenuBar extends JMenuBar {
 
     private EditorView view;
 
-    public MenuBar(EditorView view){
+    public MenuBar(EditorView view) {
         super();
-        this.view =  view;
+        this.view = view;
         this.add(getProjectMenu());
         this.add(getFileMenu());
+        this.add(getWatchdogMenu());
     }
 
-    public JMenu getProjectMenu(){
+    public JMenu getProjectMenu() {
         JMenu menu = new JMenu("Project");
         {
             JMenuItem switchProject = new JMenuItem("Change Project");
@@ -55,7 +56,7 @@ public class MenuBar extends JMenuBar {
         return menu;
     }
 
-    public JMenu getFileMenu(){
+    public JMenu getFileMenu() {
         JMenu menu = new JMenu("File");
         {
             JMenuItem newFile = new JMenuItem("New File...");
@@ -64,6 +65,19 @@ public class MenuBar extends JMenuBar {
             });
             newFile.setAccelerator(KeyStroke.getKeyStroke("ctrl f1"));
             menu.add(newFile);
+        }
+        return menu;
+    }
+
+    public JMenu getWatchdogMenu() {
+        JMenu menu = new JMenu("WatchDog");
+        {
+            JMenuItem start = new JMenuItem("Start/Stop...");
+            start.addActionListener((e) -> {
+                view.toggleWatchDog();
+            });
+            start.setAccelerator(KeyStroke.getKeyStroke("alt f1"));
+            menu.add(start);
         }
         return menu;
     }

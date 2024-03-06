@@ -21,6 +21,7 @@ public class StatusBar extends JPanel {
         this.add(getWestPanel(), BorderLayout.WEST);
         this.add(getEastPanel(), BorderLayout.EAST);
         executor.scheduleAtFixedRate(() -> {
+            watchdogIcon.setVisible(view.isStartedWatchDog());
             if(view.getClient().isLogged()) {
                 pingLabel.setText(view.getClient().getLastPing()+" ms");
             } else{
@@ -30,6 +31,7 @@ public class StatusBar extends JPanel {
     }
     public JLabel languageLabel;
     public JLabel pingLabel;
+    private JLabel watchdogIcon;
 
     public JPanel getWestPanel(){
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -40,6 +42,8 @@ public class StatusBar extends JPanel {
     public JPanel getEastPanel(){
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panel.setBorder(new EmptyBorder(3,5,3,5));
+        panel.add((watchdogIcon = new JLabel(Icons.WATCHDOG)));
+        watchdogIcon.setVisible(false);
         panel.add(new JLabel(Icons.PING));
         panel.add((pingLabel = new JLabel("0ms")));
         return panel;

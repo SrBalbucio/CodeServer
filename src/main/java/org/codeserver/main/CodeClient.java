@@ -18,6 +18,7 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -127,4 +128,10 @@ public class CodeClient {
         return obj;
     }
 
+    public void checkIfCanClose(){
+        if(openedProjects.isEmpty()){
+            request("closed", new JSONObject().put("time", System.currentTimeMillis()));
+            System.exit(0);
+        }
+    }
 }
