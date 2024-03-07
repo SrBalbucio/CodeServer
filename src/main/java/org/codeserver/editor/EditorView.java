@@ -8,6 +8,7 @@ import org.codeserver.editor.components.StatusBar;
 import org.codeserver.editor.components.TabbedPanel;
 import org.codeserver.main.CodeClient;
 import org.codeserver.model.EditableProject;
+import org.codeserver.utils.PathUtils;
 import org.codeserver.watchdog.WatchDog;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,6 +24,7 @@ import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
@@ -106,20 +108,35 @@ public class EditorView extends JFrame implements WindowListener, ComponentListe
                     "\n" +
                     "It is important that you terminate the App and WatchDog correctly so that no files are lost or leaked.\n" +
                     "\n" +
-                    "Do you really want to continue?", "WatchDog Mode", () -> {
-                boolean has = (boolean) client.request("has_fileserver", null);
-                if (has) {
-                    startedWatchDog = true;
-                    JSONObject result = (JSONObject) client.request("init_watchdog", new JSONObject().put("projectName", project.getName()));
-                    if (!result.optBoolean("error", false)) {
-                        File zip = new File(CodeClient.ROOT_PATH, "projects/" + project.getName() + ".zip");
-                        client.getFileClient().requestFile(client.getUser().getUser() + "/" + project.getName(), zip);
-                    }
-                } else {
-                    client.getUi().showErrorDialog("The server does not have a file server activated, this means that WatchDog cannot be activated!", "WatchDog is unable!");
-                }
-            }, () -> {
+                    "Do you really want to continue?", "WatchDog Mode", this::startWatchdog, () -> {
             });
+        }
+    }
+
+    private void startWatchdog(){
+        boolean has = (boolean) client.request("has_fileserver", null);
+        if (has) {
+            startedWatchDog = true;
+            JSONObject result = (JSONObject) client.request("init_watchdog", new JSONObject().put("projectName", project.getName()));
+            if (!result.optBoolean("error", false)) {
+                File zip = new File(CodeClient.ROOT_PATH, "projects/" + project.getName() + ".zip");
+                File projectFolder = new File(CodeClient.ROOT_PATH, "projects/" + project.getName());
+                client.getFileClient().requestFile(client.getUser().getUser() + "/" + project.getName(), zip);
+                try {
+                    PathUtils.unzip(zip, projectFolder);
+                } catch (IOException e) {
+                    client.getUi().showErrorDialog("Unable to unzip the project ZIP. WatchDog has not started.", "WatchDog is unable!");
+                }
+
+                try{
+                    watchDog = new WatchDog(project, projectFolder);
+                } catch (Exception e){
+                    e.printStackTrace();
+                    client.getUi().showErrorDialog("An error occurred while starting WatchDog, see the console.", "WatchDog is unable!");
+                }
+            }
+        } else {
+            client.getUi().showErrorDialog("The server does not have a file server activated, this means that WatchDog cannot be activated!", "WatchDog is unable!");
         }
     }
 

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class PathUtils {
@@ -54,7 +55,7 @@ public class PathUtils {
             }
             File[] children = fileToZip.listFiles();
             for (File childFile : children) {
-                if(!childFile.getName().equalsIgnoreCase("zippedProject.zip")) {
+                if (!childFile.getName().equalsIgnoreCase("zippedProject.zip")) {
                     zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
                 }
             }
@@ -69,5 +70,35 @@ public class PathUtils {
             zipOut.write(bytes, 0, length);
         }
         fis.close();
+    }
+
+        public static void unzip(File zipFilePath, File destDir) throws IOException {
+        if (!destDir.exists()) {
+            destDir.mkdir();
+        }
+        try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath))) {
+            ZipEntry entry = zipIn.getNextEntry();
+            while (entry != null) {
+                String filePath = destDir.getName() + File.separator + entry.getName();
+                if (!entry.isDirectory()) {
+                    extractFile(zipIn, filePath);
+                } else {
+                    File dir = new File(filePath);
+                    dir.mkdir();
+                }
+                zipIn.closeEntry();
+                entry = zipIn.getNextEntry();
+            }
+        }
+    }
+
+    private static void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            byte[] bytes = new byte[1024];
+            int length;
+            while ((length = zipIn.read(bytes)) != -1) {
+                fos.write(bytes, 0, length);
+            }
+        }
     }
 }
