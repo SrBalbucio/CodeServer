@@ -22,6 +22,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
@@ -107,13 +108,14 @@ public class EditorView extends JFrame implements WindowListener, ComponentListe
                     "\n" +
                     "Do you really want to continue?", "WatchDog Mode", () -> {
                 boolean has = (boolean) client.request("has_fileserver", null);
-                if(has) {
+                if (has) {
                     startedWatchDog = true;
                     JSONObject result = (JSONObject) client.request("init_watchdog", new JSONObject().put("projectName", project.getName()));
-                    if(!result.optBoolean("error", false)){
-
+                    if (!result.optBoolean("error", false)) {
+                        File zip = new File(CodeClient.ROOT_PATH, "projects/" + project.getName() + ".zip");
+                        client.getFileClient().requestFile(client.getUser().getUser() + "/" + project.getName(), zip);
                     }
-                } else{
+                } else {
                     client.getUi().showErrorDialog("The server does not have a file server activated, this means that WatchDog cannot be activated!", "WatchDog is unable!");
                 }
             }, () -> {

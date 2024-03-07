@@ -43,6 +43,7 @@ public class StatusBar extends JPanel {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panel.setBorder(new EmptyBorder(3,5,3,5));
         panel.add((watchdogIcon = new JLabel(Icons.WATCHDOG)));
+        watchdogIcon.setToolTipText("CodeServer is analyzing project files in real time. You can now use another IDE, such as IDEA.\nDouble click to open the project in file explorer. ");
         watchdogIcon.setVisible(false);
         panel.add(new JLabel(Icons.PING));
         panel.add((pingLabel = new JLabel("0ms")));

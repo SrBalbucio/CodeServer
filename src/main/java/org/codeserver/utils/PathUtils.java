@@ -54,7 +54,9 @@ public class PathUtils {
             }
             File[] children = fileToZip.listFiles();
             for (File childFile : children) {
-                zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
+                if(!childFile.getName().equalsIgnoreCase("zippedProject.zip")) {
+                    zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
+                }
             }
             return;
         }

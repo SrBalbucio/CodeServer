@@ -18,6 +18,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Base64;
@@ -49,9 +50,11 @@ public class CodeClient {
     @Getter
     private ProgressDialog progress;
     public static boolean preventStop;
+    public static File ROOT_PATH = new File("CodeServer");
 
     public CodeClient() {
         this.ui = new UiBooster();
+        ROOT_PATH.mkdirs();
         performLogin();
         loadProjects();
     }

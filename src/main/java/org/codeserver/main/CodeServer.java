@@ -299,7 +299,7 @@ public class CodeServer implements IDelegate {
             Project project = getProjectByName(data.getValue().getString("projectName"));
             if(project != null){
                 try {
-                    fileServer.serveFile(PathUtils.zipFolder(project.getRootPath(), "zippedProject"), project.getName());
+                    fileServer.serveFile(PathUtils.zipFolder(project.getRootPath(), "zippedProject"), data.getKey().getUser()+"/"+project.getName(), true);
                     return new JSONObject().put("error", false);
                 } catch (Exception e) {
                     e.printStackTrace();
