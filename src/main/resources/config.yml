@@ -55,3 +55,10 @@ languages:
     resource: "/"
     fileExtension: ".c"
     syntaxName: "text/c"
+  asm86:
+    name: "Assembly X86"
+    icon: "icons/assembly.png"
+    src: "src"
+    resource: "/"
+    fileExtension: ".asm"
+    syntaxName: "text/asm"

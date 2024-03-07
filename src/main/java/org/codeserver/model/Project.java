@@ -58,7 +58,10 @@ public class Project {
                         listFiles.add(prefixo + arquivo.getName() + "/");
                     }
                 } else {
-                    listFiles.add(prefixo + arquivo.getName());
+                    if (!arquivo.getName().equalsIgnoreCase("zippedProject.zip") &&
+                            !arquivo.getName().equalsIgnoreCase("codeserver-config.yml")) {
+                        listFiles.add(prefixo + arquivo.getName());
+                    }
                 }
             }
         }
@@ -95,17 +98,17 @@ public class Project {
     }
 
     public File createFile(String path, String fileName) throws IOException {
-        File file = new File(rootPath+"/"+path, fileName);
-        if(file.getParentFile() != null && !file.getParentFile().exists()){
+        File file = new File(rootPath + "/" + path, fileName);
+        if (file.getParentFile() != null && !file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
-        if(!file.exists()){
+        if (!file.exists()) {
             file.createNewFile();
         }
         return file;
     }
 
-    public boolean deleteFile(String path){
+    public boolean deleteFile(String path) {
         File file = new File(rootPath, path);
         return file.delete();
     }
@@ -120,7 +123,7 @@ public class Project {
 
     public static Project fromSection(String id, ConfigurationSection section) {
         Project project = new Project(id, section.getString("name"), section.getString("path"), section.getString("language"));
-        CodeServer.logger.info("The project "+project.getName()+"("+id+") was loaded successfully!");
+        CodeServer.logger.info("The project " + project.getName() + "(" + id + ") was loaded successfully!");
         return project;
     }
 }

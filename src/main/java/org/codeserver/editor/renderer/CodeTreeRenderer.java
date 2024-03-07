@@ -76,6 +76,8 @@ public class CodeTreeRenderer extends DefaultTreeCellRenderer {
             setIcon(Icons.CMD);
         } else if(str.endsWith(".md")){
             setIcon(Icons.MARKDOWN_ICON);
+        } else if(str.endsWith(".asm") || str.endsWith(".ASM")){
+            setIcon(Icons.ASSEMBLY);
         }
 
         switch (str) {

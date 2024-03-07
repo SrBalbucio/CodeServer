@@ -32,6 +32,7 @@ public class Icons {
     public static ImageIcon MARKDOWN_ICON;
     public static ImageIcon FOLDER_EXTENSION;
     public static ImageIcon WATCHDOG;
+    public static ImageIcon ASSEMBLY;
 
     static {
         try {
@@ -58,6 +59,7 @@ public class Icons {
             MARKDOWN_ICON = new ImageIcon(resizeImage("/icons/markdown.png", 16, 16));
             FOLDER_EXTENSION = new ImageIcon(resizeImage("/icons/folder-extension.png", 16, 16));
             WATCHDOG = new ImageIcon(resizeImage("/icons/watchdog.png", 16, 16));
+            ASSEMBLY = new ImageIcon(resizeImage("/icons/assembly.png", 16, 16));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

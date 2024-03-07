@@ -25,6 +25,7 @@ public class MenuBar extends JMenuBar {
         {
             JMenuItem switchProject = new JMenuItem("Change Project");
             switchProject.addActionListener((e) -> {
+                view.getClient().preventClose();
                 view.setVisible(false);
                 view.dispose();
                 view.getClient().getOpenedProjects().remove(view.getProject());
@@ -36,6 +37,7 @@ public class MenuBar extends JMenuBar {
         {
             JMenuItem switchProject = new JMenuItem("Close Project");
             switchProject.addActionListener((e) -> {
+                view.getClient().preventClose();
                 view.setVisible(false);
                 view.dispose();
                 view.getClient().getOpenedProjects().remove(view.getProject());

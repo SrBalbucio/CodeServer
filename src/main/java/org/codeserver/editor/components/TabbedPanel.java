@@ -86,7 +86,9 @@ public class TabbedPanel extends JTabbedPane implements ChangeListener {
                     if(fileTab.language != null){
                         view.getStatusBar().languageLabel.setText(fileTab.language.getName());
                     } else{
-                        Language lang = CodeClient.languages.stream().filter(l -> l.getFileExtesion().equalsIgnoreCase(fileTab.getFileExtension())).findAny().orElse(null);
+                        Language lang = CodeClient.languages.stream()
+                                .filter(l -> l.getFileExtesion().equalsIgnoreCase(fileTab.getFileExtension().replace(".", "")))
+                                .findAny().orElse(null);
                         view.getStatusBar().languageLabel.setText(lang == null ? fileTab.getFileExtension() : lang.getName());
                     }
                 }

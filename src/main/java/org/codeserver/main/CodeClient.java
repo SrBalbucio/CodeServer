@@ -48,6 +48,7 @@ public class CodeClient {
     public static CopyOnWriteArrayList<Language> languages = new CopyOnWriteArrayList<>();
     @Getter
     private ProgressDialog progress;
+    public static boolean preventStop;
 
     public CodeClient() {
         this.ui = new UiBooster();
@@ -134,7 +135,15 @@ public class CodeClient {
         return obj;
     }
 
+    public void preventClose(){
+        preventStop = true;
+    }
+
     public void checkIfCanClose(){
+        if(preventStop){
+            preventStop = false;
+            return;
+        }
         if(openedProjects.isEmpty()){
             request("closed", new JSONObject().put("time", System.currentTimeMillis()));
             System.exit(0);
