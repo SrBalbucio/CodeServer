@@ -129,7 +129,7 @@ public class CodeClient {
 
     public Object request(String method, Object object){
         long i = System.currentTimeMillis();
-        Object obj = client.request(method, new JSONObject().put("token", token).put("data", object));
+        Object obj = client.request(method, new JSONObject().put("token", token).put("data", object == null ? new JSONObject() : object));
         lastPing = System.currentTimeMillis() - i;
         return obj;
     }

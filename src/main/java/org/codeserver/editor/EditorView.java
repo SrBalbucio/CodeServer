@@ -106,7 +106,7 @@ public class EditorView extends JFrame implements WindowListener, ComponentListe
                     "It is important that you terminate the App and WatchDog correctly so that no files are lost or leaked.\n" +
                     "\n" +
                     "Do you really want to continue?", "WatchDog Mode", () -> {
-                boolean has = (boolean) client.request("has_fileserver", "");
+                boolean has = (boolean) client.request("has_fileserver", null);
                 if(has) {
                     startedWatchDog = true;
                     JSONObject result = (JSONObject) client.request("init_watchdog", new JSONObject().put("projectName", project.getName()));
