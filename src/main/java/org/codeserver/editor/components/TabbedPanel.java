@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.codeserver.editor.EditorView;
 import org.codeserver.editor.tabs.FileTab;
 import org.codeserver.main.CodeClient;
+import org.codeserver.model.Language;
 import org.codeserver.utils.PathUtils;
 import org.json.JSONObject;
 
@@ -85,7 +86,8 @@ public class TabbedPanel extends JTabbedPane implements ChangeListener {
                     if(fileTab.language != null){
                         view.getStatusBar().languageLabel.setText(fileTab.language.getName());
                     } else{
-                        view.getStatusBar().languageLabel.setText(fileTab.getFileExtension());
+                        Language lang = CodeClient.languages.stream().filter(l -> l.getFileExtesion().equalsIgnoreCase(fileTab.getFileExtension())).findAny().orElse(null);
+                        view.getStatusBar().languageLabel.setText(lang == null ? fileTab.getFileExtension() : lang.getName());
                     }
                 }
             } else{

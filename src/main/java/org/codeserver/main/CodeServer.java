@@ -54,6 +54,7 @@ public class CodeServer implements IDelegate {
         this.server = new Server(port, this);
         loadConfig();
         server.start();
+        initFileServer();
         logger.info("\u001B[32mThe server was successfully started on port "+port+"!");
         running = true;
         while (running) {}
@@ -98,7 +99,9 @@ public class CodeServer implements IDelegate {
 
     private void initFileServer(){
         if(config.getBoolean("downloadService.enabled")){
-            fileServer = new FTSServer(config.getInt("downloadServer.port"));
+            int fileServerPort = config.getInt("downloadService.port");
+            fileServer = new FTSServer(fileServerPort);
+            logger.info("\u001B[32mThe fileserver was successfully started on port "+fileServerPort+"!");
         }
     }
 

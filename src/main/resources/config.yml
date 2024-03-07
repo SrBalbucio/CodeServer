@@ -48,3 +48,10 @@ languages:
     resource: "/"
     fileExtension: ".rs"
     syntaxName: "text/rust"
+  c:
+    name: "C"
+    icon: "icons/c.png"
+    src: "src"
+    resource: "/"
+    fileExtension: ".c"
+    syntaxName: "text/c"
